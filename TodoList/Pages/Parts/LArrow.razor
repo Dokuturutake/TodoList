@@ -1,0 +1,13 @@
+<style>
+	.Arrow-Left {
+		transform: rotate(180deg);
+	}
+
+</style>
+<div class="Arrow-Left">
+<RArrow/>
+</div>
+	@code {
+	[Parameter]
+	public EventCallback<MouseEventArgs> OnClick{ get; set;}
+}

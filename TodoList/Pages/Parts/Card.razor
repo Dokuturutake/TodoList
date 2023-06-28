@@ -1,0 +1,36 @@
+﻿<style>
+ .box{
+	 aspect-ratio : 11 / 18;
+	 background-color: #E1D7C6;
+	 color: #A86565;
+	 box-shadow: rgba(0, 0, 0, 0.56) 1px 4px 11px;
+ }
+
+ #parent {
+  position: relative;
+  width: 100%;
+}
+
+#parent:before {
+  content: "";
+  display: block;
+  padding-top: 75%;
+}
+
+#child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+</style>
+<div  class="box @Class">
+	@ChildContent
+</div>
+@code {
+	[Parameter]
+	public RenderFragment ChildContent{ get; set; }
+	[Parameter]
+	public string Class { get; set; }
+}

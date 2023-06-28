@@ -1,0 +1,142 @@
+﻿@using TodoList.Data.PlanData;
+<style>
+	.input-field {
+  background-color: transparent; /* 背景を透明にする */
+  border: none; /* 枠線をなくす */
+}
+ .title{
+	font-size: 10vh;
+	color: #A86565;
+	margin:0 5%;
+ }
+ .title::placeholder{
+	 color: #A86565;
+	 filter:opacity(50%);
+ }
+
+ input[type="text"]:focus{
+	 outline:none;
+ }
+
+ textarea{
+	resize: none;
+ }
+
+ textarea:focus{
+ }
+
+  .contents{
+	margin:5% 5%;
+	font-size:2vh;
+ }
+  .date{
+	margin:5% 5%;
+	  display:flex;
+	  color:#579BB1;
+  }
+
+  .inputselect{
+	  background-color: transparent;
+	  border:none;
+	  color:#579BB1;
+	  padding:0.5vh;
+  }
+select {
+  -webkit-appearance: none;
+  appearance: none; /* デフォルトの矢印を無効 */
+}
+select::-ms-expand {
+  display: none; /* デフォルトの矢印を無効(IE用) */
+}
+
+input[type="date"]:focus{
+	 outline:none;
+ }
+ input[type="date"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+}
+
+option{
+	background-color:#A86565;
+	margin:1vh;
+}
+
+ </style>
+
+
+<Card Class="@Class">
+	<input type="text" placeholder="Title" 
+		maxlength="10"
+		class="input-field title"/>
+
+	<div class="date">
+	<InputSelect @bind-Value="@SelectedYear" class="inputselect">
+    @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year + 10; i++)
+    {
+        <option value="@i">@i</option>
+    }
+	</InputSelect>
+	
+	/
+
+	<InputSelect @bind-Value="@SelectedMonth" class="inputselect">
+		@for (int i = 1; i <= 12; i++)
+		{
+			<option value="@i">@i</option>
+		}
+	</InputSelect>
+
+	/
+
+	<InputSelect @bind-Value="@selectedDay" class="inputselect">
+		@for (int i = 1; i <= GetMaxDayInMonth(SelectedYear, selectedMonth); i++)
+		{
+			<option value="@i">@i</option>
+		}
+	</InputSelect>
+
+	</div>
+
+
+	<InputTextArea class="input-field contents" 
+	MaxLength="500"
+	placeholder="Contents" 
+	@bind-Value="inputValue"
+	rows="13"></InputTextArea>
+
+</Card>
+@code {
+    [Parameter]
+    public string Class { get; set; }
+    [Parameter]
+    public Todo Todo { get; set; }
+
+
+    private DateTime? selectedDate = DateTime.Today;
+
+    private string inputValue;
+
+    private int SelectedYear{ get { return selectedYear; } set { OnYearSelected(value); } } 
+    private int selectedYear = DateTime.Now.Year;
+    private int SelectedMonth{ get { return selectedMonth; } set {OnMonthSelected(value); } } 
+    private int selectedMonth = 1;
+    private int selectedDay = 1;
+
+    private void OnYearSelected(int year)
+    {
+        selectedYear = year;
+        selectedMonth = 1;
+        selectedDay = 1;
+    }
+
+    private void OnMonthSelected(int month)
+    {
+        selectedMonth = month;
+        selectedDay = 1;
+    }
+
+    private int GetMaxDayInMonth(int year, int month)
+    {
+        return DateTime.DaysInMonth(year, month);
+    }
+}

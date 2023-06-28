@@ -1,7 +1,42 @@
 ﻿@page "/"
+@using TodoList.Data.PlanData;
+@using TodoList.Pages.Parts;
+<style>
+	html body{
+		background-color: #579BB1;
+		margin:0;
+		padding:0;
+		width: 100vw;
+		height: 100vh;
+		overflow:hidden;
+		position:relative;
+	}
 
-<h1>Hello, world!</h1>
+	.center-div {
+		  position: absolute;
+		  top:10vh;
+		  left: 50%;
+		  -webkit-transform : translateX(-50%);
+		  transform : translateX(-50%);
+	}
+	.card{
+		height: 60vh;
+	}
 
-Welcome to your new app.
+	.plusminus{
+		display: flex;
+		margin: auto auto 10% auto;
+	}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+</style>
+
+
+<ToDoCard Class="center-div card"/>
+<div class="plusminus">
+<PlusButton/>
+<RArrow/>
+<LArrow/>
+</div>
+@code{
+	IEnumerable<Todo> TodoList;
+}

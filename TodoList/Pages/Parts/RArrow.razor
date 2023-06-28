@@ -1,0 +1,25 @@
+<style>
+	.bar{
+		position:relative;
+		background-color:#ECE8DD;
+		width:3px;
+		height:55px;
+		border-radius: 50px;
+	}
+	.top{
+		transform:skew(10deg);
+	}
+	.under{
+		transform:skew(-10deg);
+		top:-3px;
+	}
+
+</style>
+<div @onclick="OnClick">
+	<div class="bar top"></div>
+	<div class="bar under"></div>
+</div>
+@code {
+	[Parameter]
+	public EventCallback<MouseEventArgs> OnClick{ get; set;}
+}
