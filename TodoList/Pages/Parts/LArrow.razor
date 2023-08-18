@@ -1,13 +1,37 @@
 <style>
-	.Arrow-Left {
-		transform: rotate(180deg);
+	.lbar{
+		position:relative;
+		background-color:var(--tertiary-color);
+		width:3px;
+		height:55px;
+		border-radius: 50px;
+	}
+	.ltop{
+		transform:skew(-10deg);
+	}
+	.lunder{
+		transform:skew(10deg);
+		top:-3px;
+	}
+
+	.larrow{
+		display: block;
+		width: 20px;
+		filter: opacity(50%);
+	}
+	.larrow:hover{
+		filter: opacity(100%);
 	}
 
 </style>
-<div class="Arrow-Left">
-<RArrow/>
+<div @onclick="OnClick" class="@Class larrow">
+	<div class="lbar ltop"></div>
+	<div class="lbar lunder"></div>
 </div>
-	@code {
+@code {
 	[Parameter]
 	public EventCallback<MouseEventArgs> OnClick{ get; set;}
+
+    [Parameter]
+    public string Class { get; set; }
 }

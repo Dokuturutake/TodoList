@@ -14,6 +14,7 @@ public static class MauiProgram
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+				fonts.AddFont("BIZUDMincho-Regular.ttf", "BIZUDMincho");
 			});
 
 		builder.Services.AddMauiBlazorWebView();

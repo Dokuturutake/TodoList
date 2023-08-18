@@ -1,7 +1,7 @@
 <style>
 	.bar{
 		position:relative;
-		background-color:#ECE8DD;
+		background-color:var(--tertiary-color);
 		width:3px;
 		height:55px;
 		border-radius: 50px;
@@ -14,12 +14,23 @@
 		top:-3px;
 	}
 
+	.arrow{
+		width: 20px;
+		filter: opacity(50%);
+	}
+	.arrow:hover{
+		filter: opacity(100%);
+	}
+
 </style>
-<div @onclick="OnClick">
+<div @onclick="OnClick" class="@Class arrow">
 	<div class="bar top"></div>
 	<div class="bar under"></div>
 </div>
 @code {
 	[Parameter]
 	public EventCallback<MouseEventArgs> OnClick{ get; set;}
+
+    [Parameter]
+    public string Class { get; set; }
 }

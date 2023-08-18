@@ -25,7 +25,6 @@ namespace TodoList.Data.SQLite
 
 		private string GetFileFullPath()
 		{
-			Init();
 			string AbsolutePath = FileSystem.AppDataDirectory;
 			return Path.Combine(AbsolutePath, _dbPath);
 		}
@@ -51,7 +50,7 @@ namespace TodoList.Data.SQLite
 			return true;
 		}
 
-		public IEnumerable<Todo> GetData(string path, Func<Todo, bool> predicate = null)
+		public IEnumerable<Todo> GetData(Func<Todo, bool> predicate = null)
 		{
 			Init();
 			if (predicate == null) 

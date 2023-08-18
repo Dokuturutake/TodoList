@@ -1,15 +1,19 @@
 ﻿@page "/"
+@using TodoList.Data.Interface;
 @using TodoList.Data.PlanData;
+@using TodoList.Data.SQLite;
 @using TodoList.Pages.Parts;
 <style>
 	html body{
-		background-color: #579BB1;
+		background-color: var(--primary-color);
 		margin:0;
 		padding:0;
 		width: 100vw;
 		height: 100vh;
 		overflow:hidden;
 		position:relative;
+		font-family: var(--primary-font);
+		font-weight:lighter;
 	}
 
 	.center-div {
@@ -20,23 +24,279 @@
 		  transform : translateX(-50%);
 	}
 	.card{
-		height: 60vh;
+		height: 75vh;
 	}
 
-	.plusminus{
-		display: flex;
-		margin: auto auto 10% auto;
+	.plassbutton{
+		display:flex;
+		  position: absolute;
+		  top:85vh;
+		  right: 5%;
+		  -webkit-transform : translateX(-50%);
+		  transform : translateX(-50%);
 	}
-
+	.optionbutton{
+		display:flex;
+		  position: absolute;
+		  top:3vh;
+		  right: 5%;
+		  -webkit-transform : translateX(-50%);
+		  transform : translateX(-50%);
+		  color: var(--primary-color);
+		  filter:brightness(0.8);
+	}
+	.optionbutton:hover{
+		  filter:brightness(1.2);
+	}
+	.isvisible{
+		  filter: invert();
+	}
+	.rarrow{
+		  position: absolute;
+		  top: 50vh;
+		  right: 5vw;
+		  -webkit-transform : translateY(-50%);
+		  transform : translateY(-50%);
+	}
+	.larrow{
+		  position: absolute;
+		  top: 50vh;
+		  left: 5vw;
+		  -webkit-transform : translateY(-50%);
+		  transform : translateY(-50%);
+	}
+    .hidden-element {
+        display: none;
+    }
 </style>
 
-
-<ToDoCard Class="center-div card"/>
-<div class="plusminus">
-<PlusButton/>
-<RArrow/>
-<LArrow/>
+<div @ontouchmove="OnTouchCard"
+	 @ontouchstart="OnTouchDownCard"
+	 @ontouchend="OnTouchUpCard"
+	 @onmousedown="OnMouseDownCard"
+	 @onmouseup="OnMouseUpCard"
+	 @onmousemove="OnMouseMoveCard">
+<ToDoCard Class="center-div card" todo="ShowPlan" todoDateChanged="OnLimitChanged" DetailChanged="OnDetailChanged" TitleChanged="OnTitleChanged"/>
 </div>
+
+<div class="@(isOptionVisible? "" : "hidden-element")">
+	<OptionCard Class="center-div card"/>
+</div>
+
+<div class="plassbutton">
+<PlusButton  OnClick="InsertTodo"/>
+<MinusButton OnClick="DeleteClick"/>
+</div>
+<span @onclick="SettingButtonClick" class="oi oi-cog optionbutton @(isOptionVisible? "isvisible" : "")" aria-hidden="true"></span>
+<div class="arrows">
+<RArrow Class="rarrow" OnClick="@nextButtonClick"/>
+<LArrow Class="larrow" OnClick="@previewsButtonClick"/>
+</div>
+<Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation"/>
 @code{
-	IEnumerable<Todo> TodoList;
+	private ConfirmBase DeleteConfirmation{ get; set;}
+	private void DeleteClick()
+	{
+		DeleteConfirmation.Show();
+	}
+
+	private void ConfirmDelete_Click(bool deleteConfirmed)
+	{
+		if(deleteConfirmed == true)
+		{
+			removeTodo();
+		}
+
+	}
+
+	public Index(){
+		TodoList = todoIO.GetData().ToList();
+		if (TodoList.Count == 0)
+		{
+			TodoList.Add(new Todo() { Limit = DateTime.Now });
+		} 
+		ShowPlan = ClosestDate(TodoList);
+		nowTodoIndex = TodoList.IndexOf(ShowPlan);
+		TodoList = TodoList.OrderBy(todo => todo.Limit).ToList();
+	}
+	ITodoIO todoIO = new SQLite_TodoIO();
+
+	List<Todo> TodoList;
+
+	Todo ShowPlan { get; set; }
+	string ShowPlanDetail{ get => ShowPlan.Detail; set{ ShowPlan.Detail = value; } }
+	int nowTodoIndex;
+
+	private void removeTodo()
+	{
+		var removePlan = ShowPlan;
+
+		if(TodoList.Count() == 1)
+		{
+			var newTodo = new Todo { Limit = DateTime.Today };
+			TodoList.Insert(nowTodoIndex + 1, newTodo);
+			ShowPlan = TodoList[nowTodoIndex + 1];
+			TodoList.Remove(removePlan);
+			todoIO.Insert(newTodo);
+		}
+		else {
+			if (nowTodoIndex == 0)
+				nextButtonClick();
+			else
+				previewsButtonClick();
+
+			TodoList.Remove(removePlan);
+		}
+		todoIO.Delete(removePlan);
+	}
+
+	private void InsertTodo()
+	{
+		var newTodo = new Todo { Limit = DateTime.Today };
+		TodoList.Insert(nowTodoIndex + 1, newTodo);
+		todoIO.Insert(newTodo);
+		nextButtonClick();
+	}
+
+	private void nextButtonClick()
+	{
+		if(TodoList.Count > nowTodoIndex + 1)
+		{
+			ShowPlan = TodoList[nowTodoIndex + 1];
+			nowTodoIndex++;
+		}
+	}
+
+
+
+	private void previewsButtonClick()
+	{
+		if(0 <= nowTodoIndex - 1)
+		{
+			ShowPlan = TodoList[nowTodoIndex - 1];
+			nowTodoIndex--;
+		}
+	}
+
+	private Todo ClosestDate(IEnumerable<Todo> todos)
+	{
+		DateTime currentDate = DateTime.Now.Date; // 現在の日付を取得し、時刻部分を切り捨てる
+		Todo MaxDate = todos.Last();
+
+		Todo result = todos
+		.OrderBy(todo => todo.Limit)
+		.FirstOrDefault(todo => todo.Limit > currentDate);
+
+		if (result == null)
+			return MaxDate;
+
+		return result;
+	}
+
+	private void OnLimitChanged(DateTime date)
+	{
+		ShowPlan.Limit = date;
+		OnUpdateShowPlan();
+	}
+	private void OnTitleChanged(string title)
+	{
+		ShowPlan.Title= title;
+		OnUpdateShowPlan();
+	}
+	private void OnDetailChanged(string detail)
+	{
+		ShowPlan.Detail = detail;
+		OnUpdateShowPlan();
+	}
+	private void OnUpdateShowPlan()
+	{
+		todoIO.UpDate(ShowPlan);
+	}
+
+	private double _xstart, _ystart;
+	private bool isSwiping = false;
+	DateTime swipeStartTime;
+
+	private bool isOptionVisible = false;
+	public void SettingButtonClick()
+	{
+		isOptionVisible = !isOptionVisible;
+	}
+
+	#region ThouchCardMove
+
+	private void OnTouchDownCard(TouchEventArgs e)
+	{
+		isSwiping = true;
+	}
+	private void OnTouchUpCard(TouchEventArgs e)
+	{
+		isSwiping = false;
+	}
+	private void OnTouchCard(TouchEventArgs e)
+	{
+		if (isSwiping)
+		{
+			var _xend = e.Touches[0].ClientX;
+			var _yend = e.Touches[0].ClientY;
+			var speeds = GetSpeed(_xend, _yend);
+
+			if (speeds.X > 1)
+			{
+				previewsButtonClick();
+				isSwiping = false;
+			}
+			else if (speeds.X < -1)
+			{
+				nextButtonClick();
+				isSwiping = false;
+			}
+		}
+	}
+	#endregion
+
+	#region MouseCardMove
+	private void OnMouseDownCard(MouseEventArgs e)
+	{
+		isSwiping = true;
+	}
+	private void OnMouseUpCard(MouseEventArgs e)
+	{
+		isSwiping = false;
+	}
+	private void OnMouseMoveCard(MouseEventArgs e)
+	{
+		if (isSwiping)
+		{
+			var _xend = e.ClientX;
+			var _yend = e.ClientY;
+			var speeds = GetSpeed(_xend, _yend);
+
+			if (speeds.X > 1)
+			{
+				previewsButtonClick();
+				isSwiping = false;
+			}
+			else if (speeds.X < -1)
+			{
+				nextButtonClick();
+				isSwiping = false;
+			}
+		}
+	}
+	#endregion
+
+	private Point GetSpeed(double _xend, double _yend)
+	{
+		var deltaX = _xend - _xstart;
+		var deltaY = _yend - _ystart;
+		var elapsedTime = (DateTime.Now - swipeStartTime).TotalMilliseconds;
+		var swipeSpeedX = deltaX / elapsedTime; // Xスワイプ速度の計算（ピクセル/ミリ秒)
+		var swipeSpeedY = deltaY / elapsedTime; // Yスワイプ速度の計算（ピクセル/ミリ秒)
+		swipeStartTime = DateTime.Now;
+		_xstart = _xend;
+		_ystart = _yend;
+		System.Diagnostics.Debug.WriteLine($"{swipeSpeedX},{swipeSpeedY}");
+		return new Point(swipeSpeedX, swipeSpeedY);
+	}
 }

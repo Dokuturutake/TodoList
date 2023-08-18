@@ -1,0 +1,16 @@
+﻿@font-face{
+    font-family: LINESeedJP;
+    src:url(../fonts/LINESeedJP_OTF_Bd.woff2) format('woff2'),
+        url(../fonts/LINESeedJP_OTF_Bd.woff) format('woff');
+    font-weight: normal;
+
+    font-family: LINESeedJP;
+    src:url(../fonts/LINESeedJP_OTF_Rg.woff2) format('woff2'),
+        url(../fonts/LINESeedJP_OTF_Rg.woff) format('woff');
+    font-weight: lighter;
+
+    font-family: LINESeedJP;
+    src:url(../fonts/LINESeedJP_OTF_Eb.woff2) format('woff2'),
+        url(../fonts/LINESeedJP_OTF_Eb.woff) format('woff');
+    font-weight: bold;
+}

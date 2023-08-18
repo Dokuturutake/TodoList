@@ -1,0 +1,104 @@
+﻿@using TodoList.Data.FileIO;
+@using TodoList.Data.Interface;
+<style>
+	:root{
+		--primary-color:@color["BackGroundColor"];
+		--secondary-color: @color["PaperColor"];
+		--tertiary-color: @color["SubColor1"];
+		--quaternary-color:@color["SubColor2"];
+		--primary-text-color: @color["TextColor"];
+		--title-text-color: @color["TitleColor"];
+		--subtitle-text-color: @color["DateColor"];
+		--title-font: @color["BackGroundColor"];
+		--primary-font: @PrimaryFont;
+		--secondary-font: @SecondaryFont;
+	}
+	.card{
+	padding:3vh 3vh;
+	background-color:transparent;
+	border:none;
+	}
+
+	.side{
+		display:flex;
+		text-align:right;
+		justify-content: flex-end;
+	}
+
+	h2{
+		color:var(--title-text-color)
+	}
+
+	p{
+		color:var(--primary-text-color)
+	}
+	.textcenter{
+		text-align:center;
+	}
+
+	.marginr{
+		margin-right: 1vh;
+	}
+	.optiontitle{
+		font-size: 5vh;
+		color: var(--title-text-color);
+		font-family: var(--title-font);
+		font-weight: bold;
+		width:100%;
+		line-height:5.08vh;
+		margin-bottom:1vh;
+	}
+</style>
+<Card Class="@Class">
+	<div class="card">
+		<h2 class="optiontitle side">Option</h2>
+
+		@foreach (var col in color)
+		{
+			var currentColor = col;
+			<div class="colors">
+				<div class="side">
+					<p class="contents marginr">@currentColor.Key</p>
+					<input value="@currentColor.Value" type="color" @oninput="e => ChangeColor(e,currentColor.Key)" @onchange="SaveDatas"/>
+				</div>
+			</div>
+		}
+	</div>
+</Card>
+@code {
+	IOptionIO fileIO = new FileIO();
+	readonly string colorFilePath = "ColorSetting";
+	Dictionary<string, string> color;
+	Dictionary<string, string> DefaultColor = new Dictionary<string, string>()
+	{
+		{"BackGroundColor","#579BB1" },
+		{"PaperColor","#E1D7C6" },
+		{"SubColor1","#ECE8DD" },
+		{"SubColor2","#F8F4EA" },
+		{"TextColor","#5D4141" },
+		{"TitleColor","#B22A2A" },
+		{"DateColor","#579BB1" },
+	};
+	void ChangeColor(ChangeEventArgs e, string key)
+	{
+		color[key] = e.Value as string;
+	}
+
+	public void SaveDatas()
+	{
+		fileIO.SetData(color, colorFilePath);
+	}
+
+	[Parameter]
+	public string Class { get; set; }
+
+	public string PrimaryFont { get; set; } = "Source Han Serif";
+	public string SecondaryFont { get; set; } = "Source Han Serif";
+
+	public OptionCard(){
+		color = fileIO.GetData(colorFilePath) ?? DefaultColor;
+	}
+	private List<string> Colors;
+	List<string> ColorsName;
+
+}

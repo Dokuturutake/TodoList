@@ -12,6 +12,6 @@ namespace TodoList.Data.Interface
 		bool Insert(Todo todo);
 		bool Delete(Todo todo);
 		bool UpDate(Todo todo);
-		IEnumerable<Todo> GetData(string path, Func<Todo,bool> predicate = null);
+		IEnumerable<Todo> GetData(Func<Todo,bool> predicate = null);
 	}
 }

@@ -1,0 +1,115 @@
+﻿<style>
+  .inputselect{
+	  background-color: transparent;
+	  border:none;
+	  color: var(--subtitle-text-color);
+  }
+select {
+  -webkit-appearance: none;
+  appearance: none; /* デフォルトの矢印を無効 */
+  margin:-0.8vh, 0;
+}
+select::-ms-expand {
+  display: none; /* デフォルトの矢印を無効(IE用) */
+}
+
+input[type="date"]:focus{
+	 outline:none;
+ }
+ input[type="date"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+}
+
+option{
+	background-color:var(--quaternary-color);
+	text-align:center;
+}
+
+.date{
+	  font-size:2.6vh;
+	  color: var(--subtitle-text-color);
+	  display:flex;
+}
+.separate{
+	margin:0,-1vh;
+	
+}
+
+ </style>
+
+
+	<div class="date" 
+	@attributes="AdditionalAttributes">
+
+	<InputSelect @bind-Value="@SelectedYear" class="inputselect">
+    @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year + 10; i++)
+    {
+        <option value="@i">@i</option>
+    }
+	</InputSelect>
+	<div class="separate">
+	/
+	</div>
+	<InputSelect @bind-Value="@SelectedMonth" class="inputselect"
+	@attributes="AdditionalAttributes">
+		@for (int i = 1; i <= 12; i++)
+		{
+			<option value="@i">@i</option>
+		}
+	</InputSelect>
+
+	<div class="separate">
+	/
+	</div>
+
+	<InputSelect @bind-Value="@selectedDay" class="inputselect"
+	@attributes="AdditionalAttributes">
+		@for (int i = 1; i <= GetMaxDayInMonth(SelectedYear, GetDateMonth()); i++)
+		{
+			<option value="@i">@i</option>
+		}
+	</InputSelect>
+
+	</div>
+
+@code {
+	[Parameter]
+	public DateTime date { get; set;}
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object> AdditionalAttributes { get; set; }
+	[Parameter]
+	public EventCallback<DateTime> OnChangedate{ get; set;}
+
+	private int GetDateMonth() => date.Month;
+	private int GetDateYear() => date.Year;
+
+	private DateTime? selectedDate = DateTime.Today;
+
+	private int SelectedYear{ get => date.Year; set { OnYearSelected(value); } } 
+	private int SelectedMonth{ get => date.Month; set { OnMonthSelected(value); } } 
+	private int selectedDay{ get => date.Day; set { OnDaySelected(value); } } 
+
+	private void OnYearSelected(int year)
+	{
+		date = new DateTime(year, 1, 1);
+		OnChangedate.InvokeAsync(date);
+	}
+
+    private void OnMonthSelected(int month)
+    {
+		date = new DateTime(GetDateYear(), month, 1);
+		OnChangedate.InvokeAsync(date);
+    }
+
+    private void OnDaySelected(int day)
+    {
+		date = new DateTime(GetDateYear(), GetDateMonth(), day);
+		OnChangedate.InvokeAsync(date);
+    }
+
+    private int GetMaxDayInMonth(int year, int month)
+    {
+        return DateTime.DaysInMonth(year, month);
+    }
+}

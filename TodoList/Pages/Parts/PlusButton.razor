@@ -1,13 +1,13 @@
 ﻿<style>
     .dli-plus {
         display: inline-block;
-        vertical-align: middle;
-        width: 1em;
-        height: 0.1em;
+        width: 5vh;
+        height: 0.5vh;
         background: currentColor;
         border-radius: 0.1em;
         position: relative;
-        color: #579BB1;
+        margin:auto;
+        color: var(--primary-color);
     }
 
 	.dli-plus::before {
@@ -23,24 +23,20 @@
 	}
 
 	.plus{
-        background-color: #ECE8DD;
-        color: #579BB1;
+        background-color: var(--tertiary-color);
 	}
     .circle-button {
-        line-height:50px;
+        display:flex;
+        line-height: 9vh;
         padding: 0;
-        width: 50px;
-        height: 50px;
+        height: 9vh;
+        width: 9vh;
         border-radius: 50%;
         text-align: center;
-        font-size: 30px;
         cursor: pointer;
         transition: transform 0.3s ease;
-		box-shadow: rgba(0, 0, 0, 0.56) 1px 4px 11px;
-		transition: box-shadow 0.3s ease;
-		transition: filter 0.3s ease;
+		box-shadow: rgba(0, 0, 0, 0.56) 0px 4px 6px;
         user-select:none;
-        margin: 10px;
     }
 
         .circle-button:hover {
@@ -48,17 +44,19 @@
         }
 
 	  .circle-button:active {
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+		box-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
             filter:brightness(0.9);
 	  }
 
     
 </style>
 
-<div class="plus circle-button" @onclick="OnClick">
+<div class="plus circle-button @Class" @onclick="OnClick">
 	<span class="dli-plus"></span>
 </div>
 @code {
 	[Parameter]
 	public EventCallback<MouseEventArgs> OnClick{ get; set;}
+	[Parameter]
+	public string Class { get; set; }
 }

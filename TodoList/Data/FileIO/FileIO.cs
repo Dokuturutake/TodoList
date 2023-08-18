@@ -13,8 +13,12 @@ namespace TodoList.Data.FileIO
 		public Dictionary<string,string> GetData(string path)
 		{
 			string fullPath = GetFileFullPath(path);
-			string json = File.ReadAllText(fullPath);
-		 	return ToJsonDeserialize(json);
+			if (Path.Exists(fullPath))
+			{
+				string json = File.ReadAllText(fullPath);
+				return ToJsonDeserialize(json);
+			}
+			else { return null; }
 		}
 
 		public bool SetData(Dictionary<string,string> data, string path)
